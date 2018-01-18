@@ -1,0 +1,253 @@
+&main (
+    '<ASCII-MAC>'"\n"
+    '<vsn:7>'"\n"
+    !for {/Root/HotelDescription[@Language='ru']} (
+        $en={../HotelDescription[@Language='en']}
+        
+        -- заголовок
+        '<pstyle:Town>' !for{$en/Country} ({convert-case(@Name, 'upper')})
+        ' <0x2013> ' !for{$en/City} ({convert-case(@Name, 'upper')})
+        ' <0x2013> <cstyle:Categor>'{Rating/@Name}'<cstyle:>'"\r\n"
+        '<pstyle:Hotel E>'{$en/@Name}"\r\n"
+        '<pstyle:Hotel R>'{@Name}"\r\n"
+        -- значки услуг
+        '<pstyle:Znaks>'
+        !for {/Root/HotelDescription[@Language='ru']} (
+            !for {Amenities/Amenity} (
+                &amenity
+                !if {position() mod 21 = 0 and position() < last()} (
+                    '<0x000A>'
+                )
+            )
+        )
+        '<cnxc:Column>'"\r\n"
+        '<pstyle:Min><cstyle:Pic>c<cstyle:>'
+        
+        -- описание на английском
+        '<ct:Italic>'"\t"'Built in<0x00A0>'{$en/@Built}', '
+        !if {$en/@Reconstructed} (
+            'reconstructed in<0x00A0>'{$en/@Reconstructed}', '
+        )
+        !if {@NumberOfBlocks > 1} (
+            'buildings<0x00A0><0x2013><0x00A0>'{@NumberOfBlocks}', '
+        )
+        'floors<0x00A0><0x2013><0x00A0>'{@NumberOfFloors}', '
+        'rooms<0x00A0><0x2013><0x00A0>'{@NumberOfRooms}'<ct:><0x000A><ct:Regular>'
+        
+        -- описание на русском
+        'Построен в<0x00A0>'{@Built}'<0x00A0>' !if {not(contains-cyrillic(@Built))}('г.') ', '
+        !if {@Reconstructed} ('реконструирован в<0x00A0>'{@Reconstructed}'<0x00A0>г., ')
+        !if {@NumberOfBlocks > 1} ('корпусов <0x00A0><0x2013><0x00A0>'{@NumberOfBlocks}', ')
+        'этажей<0x00A0><0x2013><0x00A0>'{@NumberOfFloors}', '
+        'комнат <0x00A0><0x2013><0x00A0>'{@NumberOfRooms}"\r\n"
+        
+        -- адрес
+        '<ct:><pstyle:Min><cstyle:Pic>d<cstyle:><ct:Italic>'"\t" 
+            {$en/@Address}', '
+            !if {$en/TypeOfPlace/@Code > 2} ({$en/TypeOfPlace/@Name}', ') 
+            {$en/City/@Name}', '
+            !if {$en/AdmUnit2/@Code > 1} ({$en/AdmUnit2/@Name}', ') 
+            !if {$en/AdmUnit1/@Code > 1} ({$en/AdmUnit1/@Name}', ') 
+            {$en/@Zip}', '
+            {$en/Country/@Name}
+        '<0x000A><ct:><ct:Regular>'
+            {Country/@Name}', '
+            {@Zip}', ' 
+            !if {AdmUnit1/@Code > 1} ({AdmUnit1/@Name}', ') 
+            !if {AdmUnit2/@Code > 1} ({AdmUnit2/@Name}', ') 
+            {City/@Name}', '
+            !if {TypeOfPlace/@Code > 2} ({TypeOfPlace/@Name}', ') 
+            {@Address}
+        "\r\n"
+        
+        -- описание, достопримечательности
+        [[
+            Ничего не понял про сортировку. Цитата из задания:
+            (Если название достопримечательности начинается на The, то T переводится в строчную букву t, а достопримечательность занимает свое место в соответствии с алфавитной упорядоченностью названия после «the пробел» от A-Y)
+            [Ваня, видимо достопримечательности в поле должны стоять по алфавиту]
+        ]]
+        '<ct:><pstyle:Min><cstyle:Pic>e<cstyle:><ct:Italic>'"\t"
+        {$en/@Description}'<0x000A><ct:><ct:Regular>'{@Description}"\r\n"
+        
+        -- сайт в интернете
+        '<ct:><pstyle:Min><cstyle:Pic>h<cstyle:><ct:Regular>'"\t"
+        'www.acase.ru'{@WebAddress}', www.besteurasian.com'{@WebAddress}"\r\n"
+        
+        -- системы резервации
+        '<ct:><pstyle:Min><cstyle:Pic>i<cstyle:><ct:Regular>'"\t"
+        'Amadeus YX '   {GDSystems/GDS[@Name = 'AMADEUS']/@Code}', '
+        'Galileo YX '   {GDSystems/GDS[@Name = 'GALILEO']/@Code}', '
+        'Sabre YX '     {GDSystems/GDS[@Name = 'SABRE']/@Code}', '
+        'Worldspan YX ' {GDSystems/GDS[@Name = 'WORLDSPAN']/@Code}', '
+        'ADS YX '       {GDSystems/GDS[@Name = 'ADS / IDS']/@Code}"\r\n"
+        
+        -- цены
+        '<ct:><pstyle:Min><cstyle:Pic>f<cstyle:><ct:Italic>'"\t"
+        'Rack rates/<ct:><ct:Regular>Открытые цены: <ct:><ct:Regular><cf:Symbol><0x20AC>'
+        '<ct:><cf:><ct:Regular>'{@RackRateMin}'<0x2013>'{@RackRateMax}"\r\n"
+        
+        -- телефон
+        '<ct:><pstyle:Min><cstyle:Pic>g<cstyle:><ct:Regular>'"\t"{@Phone}"\r\n"
+        
+        -- часовой пояс
+        '<ct:><pstyle:Min><cstyle:Pic>u<cstyle:><ct:Regular>'"\t"
+        'GMT: +'{@Gmt}
+        !if {not (@Gmt = @GmtW)} (' / +'{@GmtW}' (<ct:><ct:Italic>sum./win.,<ct:><ct:Regular> летн./зимн.)')
+        "\r\n"
+        
+        -- время заезда-выезда
+        '<ct:><pstyle:Min><cstyle:Pic>p<cstyle:><ct:Regular>'"\t"
+        '<ct:><ct:Italic>in<ct:><ct:Regular> '{@CheckIn}'<0x00AD>/ <ct:><ct:Italic>out<ct:><ct:Regular> '{@CheckOut}"\r\n"
+        
+        -- платёжные системы
+        '<ct:><pstyle:Min><cstyle:Pic>q<cstyle:><ct:Regular>'"\t"
+        !for {PaySystems/PaySystem} (
+            !if {position() > 1} (', ') 
+            !choose(
+                !when {@Name = 'VISA'} ('VISA')
+                !when {@Name = 'EUROCARD/MASTERCARD'} ('EuroCard/MasterCard')
+                !when {@Name = 'VISA'} ('Visa')
+                !when {@Name = 'DINERS CLUB'} ('Diners Club')
+                !when {@Name = 'JCB INTERNATIONAL'} ('JCB')
+            )            
+        )"\r\n"
+        
+        -- зал
+        '<ct:><pstyle:Min><cstyle:Pic>j<cstyle:><ct:Italic>'"\t"
+        'max '
+        !choose (
+            !when {@ConferenceHallMax > @MeetingRoomMax} ({@ConferenceHallMax})
+            !otherwise ({@MeetingRoomMax})
+        )
+        ' pax/'
+        !choose (
+            !when {@ConferenceHallMax < 40 and @MeetingRoomMax < 40} ('meeting room')
+            !otherwise ('conference hall')
+        )
+        '<ct:><ct:Regular>'"\r\n"
+        
+        -- расстояние до центра
+        '<ct:><pstyle:Min><cstyle:Pic>k<cstyle:><ct:Italic>'"\t"
+        'City centre<0x00A0><0x2013><0x00A0>'{translate(Objects/Object[ObjectType/@Code=1000042]/@Distance, '.', ',')}'<ct:><ct:Regular>'"\r\n"
+        
+        -- метро
+        '<ct:><pstyle:Min><cstyle:Pic>l<cstyle:><ct:Italic>'"\t"
+        !choose (
+            !when {Objects/Object[ObjectType/@Code=800104]} (
+                !for {Objects/Object[ObjectType/@Code=800104]} (
+                )
+            )
+            !otherwise ('<0x2013>')
+        )
+        [[
+        Если станций несколько и расстояния совпадают, тогда перечисляем названия станций метро через запятую с пробелом и ставим <0x00A0><0x2013><0x00A0> расстояние после последнего названия из связки, или убираем расстояния которые повторяются в середине связки – как проще.
+        ]]
+        '<ct:><ct:Regular>'"\r\n"
+    )
+)
+
+&amenity (
+    !choose (
+        !when {@Code = 1}  ('!')
+        !when {@Code = 2}  ('s')
+        !when {@Code = 3}  ('#')
+        !when {@Code = 4}  ('$')
+        !when {@Code = 6}  ('&')
+        !when {@Code = 7}  ('t')
+        !when {@Code = 69} ('c')
+        !when {@Code = 8}  ('(')
+        !when {@Code = 9}  (
+            '<ctk:-300><ck:-300>)<ctk:><ck:><cstyle:Bar><ctk:1225><ck:-100>'{../../@NumberOfRestaurants} '<ctk:><ck:><cstyle:>'
+        )
+        !when {@Code = 10} (
+            !choose(
+                !when {../../@NumberOfBars24 > 0} (
+                    '<ctk:-400><ck:-400>*<ctk:><ck:><cstyle:Bar><ctk:-400><ck:400>'{../../@NumberOfBars}'/<ctk:><ck:><ctk:1225><ck:-500>'{../../@NumberOfBars24}'<ctk:><ck:><cstyle:>'
+                )
+                !otherwise (
+                    '<ctk:-300><ck:-300>*<ctk:><ck:><cstyle:Bar><ctk:1225><ck:-100>'{../../@NumberOfBars}'<ctk:><ck:><cstyle:>'
+                )
+            )
+        )
+        !when {@Code = 11} ('+')
+        !when {@Code = 12} (',')
+        !when {@Code = 14} ('.')
+        !when {@Code = 13} ('r')
+        !when {@Code = 15} ('/')
+        !when {@Code = 66} ('x')
+        !when {@Code = 16} ('0')
+        !when {@Code = 17} ('1')
+        !when {@Code = 18} ('2')
+        !when {@Code = 19} ('3')
+        !when {@Code = 20} ('4')
+        !when {@Code = 21} ('5')
+        !when {@Code = 22} ('6')
+        !when {@Code = 86} ('=')
+        !when {@Code = 87} ('D')
+        !when {@Code = 88} ('`')
+        !when {@Code = 89} ('~')
+        !when {@Code = 90} ('\\<') -- В разметке ИнДизайна треугольные скобки должны быть эскейплены.
+        !when {@Code = 91} ('{')
+        !when {@Code = 92} ('}')
+        !when {@Code = 23} ('7')
+        !when {@Code = 70} ('d')
+        !when {@Code = 24} ('8')
+        !when {@Code = 93} ('|')
+        !when {@Code = 25} ('9')
+        !when {@Code = 26} (':')
+        !when {@Code = 27} (';')
+        !when {@Code = 30} ('\\>') -- В разметке ИнДизайна треугольные скобки должны быть эскейплены.
+        !when {@Code = 31} ('?')
+        !when {@Code = 33} ('A')
+        !when {@Code = 34} ('B')
+        !when {@Code = 35} ('C')
+        !when {@Code = 37} ('E')
+        !when {@Code = 39} ('G')
+        !when {@Code = 40} ('H')
+        !when {@Code = 41} ('I')
+        !when {@Code = 65} ('y')
+        !when {@Code = 42} ('J')
+        !when {@Code = 43} ('K')
+        !when {@Code = 44} ('L')
+        !when {@Code = 46} ('N')
+        !when {@Code = 45} ('M')
+        !when {@Code = 48} ('O')
+        !when {@Code = 47} ('P')
+        !when {@Code = 73} ('g')
+        !when {@Code = 72} ('f')
+        !when {@Code = 50} ('Q')
+        !when {@Code = 49} ('R')
+        !when {@Code = 52} ('S')
+        !when {@Code = 51} ('T')
+        !when {@Code = 54} ('U')
+        !when {@Code = 53} ('V')
+        !when {@Code = 77} ('k')
+        !when {@Code = 76} ('j')
+        !when {@Code = 95} ('@')
+        !when {@Code = 94} ('%')
+        !when {@Code = 97} ('F')
+        !when {@Code = 96} ('e')
+        !when {@Code = 81} ('o')
+        !when {@Code = 80} ('n')
+        !when {@Code = 79} ('m')
+        !when {@Code = 78} ('l')
+        !when {@Code = 75} ('i')
+        !when {@Code = 74} ('h')
+        !when {@Code = 56} ('W')
+        !when {@Code = 55} ('X')
+        !when {@Code = 58} ('Y')
+        !when {@Code = 57} ('Z')
+        !when {@Code = 99} ('_')
+        !when {@Code = 98} ('-')
+        !when {@Code = 83} ('q')
+        !when {@Code = 82} ('p')
+        !when {@Code = 85} ('z')
+        !when {@Code = 84} ('u')
+        !when {@Code = 64} ('a')
+        !when {@Code = 63} ('b')
+        !when {@Code = 60} ('[')
+        !when {@Code = 59} ('\\\\') -- на выходе бэкслеш должен быть удвоенным.
+        !when {@Code = 67} ('v')
+        !when {@Code = 68} ('w')
+    )
+)

@@ -1,0 +1,156 @@
+&main(
+    %html (
+        %head(%link @rel='stylesheet' @src='style/table.css')
+        %body(!for{/Root}(&Root))
+    )
+)
+
+&Root (
+    !for {HotelDescription[@Language='ru']} (
+        $en={../HotelDescription[@Language='en']}
+        %table (
+            %tr (%td @colspan=2 (
+                %span.title_address ({$en/Country/@Name}' - '{$en/City/@Name}' - ')
+                %span.title_rating  ({$en/Rating/@Name})
+            ))
+            %tr (%td @colspan=2 (%span.title_en_name ({$en/@Name})))
+            %tr (%td @colspan=2 ({@Name}))
+            %tr (%td @colspan=2 (
+                !for {Amenities/Amenity} (
+                    %img @src={@Url} @title={@Name};
+                    !if {@Code =  9 and $en/@NumberOfRestaurants > 1} ({$en/@NumberOfRestaurants})
+                    !if {@Code = 10 and $en/@NumberOfBars        > 1} ({$en/@NumberOfBars})
+                )
+            ))
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (
+                    %p (
+                        'Built in '{@Built}', '
+                        'reconstructed in'{@Reconstructed}', '
+                        'floors - '{@NumberOfFloors}', '
+                        'rooms - '{@NumberOfRooms}
+                    )
+                    %p (
+                        'Построен в '{@Built}' г., '
+                        'реконструирован в '{@Reconstructed}' г., '
+                        'этажей - '{@NumberOfFloors}', '
+                        'номеров - '{@NumberOfRooms}
+                    )
+                )
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (
+                    %p ({$en/@Address}', '{$en/City/@Name}', '{@Zip}', '{$en/Country/@Name})
+                    %p ({Country/@Name}', '{@Zip}', '{City/@Name}', '{@Address})
+                )
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (
+                    %p ({$en/@Description})
+                    %p ({@Description})
+                )
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ({@WebAddress}))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !for {GDSystems/GDS} (
+                        !if {position() > 1} (', ')
+                        {@Name}' '{@Code}
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ('Rack rates/Открытые цены: &euro; '{@RackRateMin}' &ndash; &euro; '{@RackRateMax}))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ({@Phone}))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    'GMT:'
+                    !choose (
+                        !when {@Gmt > 0} ('+')
+                        !when {@Gmt < 0} ('&ndash;')
+                    )
+                    {@Gmt}
+                    !if {@GmtW and @GmtW != @Gmt} (
+                        ' / '
+                        !choose (
+                            !when {@GmtW > 0} ('+')
+                            !when {@GmtW < 0} ('&ndash;')
+                        )
+                        {@GmtW}
+                        ' (win./sum., летн./зимн.)'
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ('in '{@CheckIn}' / out '{@CheckOut}))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !for {PaySystems/PaySystem} (
+                        !if {position() > 1} (', ')
+                        {@Name}
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ('max '{@ConferenceHallMax}' pax/conference hall'))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p ({$en/@CityCentre}))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !choose (
+                        !when {$en/@Underground != ''} ({$en/@Underground})
+                        !otherwise ('&mdash;')
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !choose (
+                        !when {$en/@RailwayStation != ''} ({$en/@RailwayStation})
+                        !otherwise ('&mdash;')
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !choose (
+                        !when {$en/@Airport != ''} ({$en/@Airport})
+                        !otherwise ('&mdash;')
+                    )
+                ))
+            )
+            %tr (
+                %td @valign='top' ('[иконка]')
+                %td (%p (
+                    !choose (
+                        !when {$en/@RiverPort != ''} ({$en/@RiverPort})
+                        !otherwise ('&mdash;')
+                    )
+                ))
+            )
+        )
+    )
+)

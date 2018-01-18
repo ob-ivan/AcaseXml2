@@ -1,0 +1,19 @@
+& main (
+    {/Root/HotelDescription[@Language='en']/Country/@Name}"\t"
+    {/Root/HotelDescription[@Language='en']/City/@Name}"\t"
+    {/Root/HotelDescription[@Language='en']/Rating/@Name}"\t"
+    {/Root/HotelDescription[@Language='en']/@Name}"\t"
+    {/Root/HotelDescription[@Language='ru']/@Name}"\t"
+    
+    {/Root/HotelDescription[@Language='en']/@Built}"\t"
+    {/Root/HotelDescription[@Language='en']/@Reconstructed}"\t"
+    {/Root/HotelDescription[@Language='en']/@NumberOfBlocks}"\t"
+    {/Root/HotelDescription[@Language='en']/@NumberOfFloors}"\t"
+    {/Root/HotelDescription[@Language='en']/@NumberOfRooms}"\t"
+    
+    {/Root/HotelDescription[@Language='ru']/@Built}"\t"
+    {/Root/HotelDescription[@Language='ru']/@Reconstructed}"\t"
+    {/Root/HotelDescription[@Language='ru']/@NumberOfBlocks}"\t"
+    {/Root/HotelDescription[@Language='ru']/@NumberOfFloors}"\t"
+    {/Root/HotelDescription[@Language='ru']/@NumberOfRooms}"\t"
+)

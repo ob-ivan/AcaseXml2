@@ -1,0 +1,47 @@
+# 
+# acase.ru/xml/form.jsp
+#
+# В любой запрос входят обязательные поля:
+#   * RequestName
+#   * CompanyId
+#   * UserId
+#   * Password
+#   Language = ru
+
+#
+# 1. Список стран
+#
+[CountryListRequest]
+CountryCode
+CountryName
+Opt
+
+#
+# 2. Список городов в стране
+#
+[CityListRequest]
+CountryCode
+CountryName
+CityCode
+CityName
+Opt
+
+#
+# 3. Список отелей в городе
+#
+[HotelListRequest]
+HotelCode
+HotelName
+CountryCode
+CityCode
+HotelRatingCode
+Opt
+
+#
+# 4. Описание одного отеля
+#
+[HotelDescriptionRequest]
+HotelCode
+CurrencyCode
+Opt=UseObjects
+

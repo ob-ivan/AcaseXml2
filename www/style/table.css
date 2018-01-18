@@ -1,0 +1,17 @@
+span.title_address {
+    text-transform: uppercase;
+    color: red;
+}
+
+span.title_rating {
+    text-transform: uppercase;
+    color: green;
+}
+
+span.title_en_name {
+    font-size: 1.2em;
+}
+
+p {
+    margin: 0;
+}
